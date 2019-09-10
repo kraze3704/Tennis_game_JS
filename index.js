@@ -8,6 +8,9 @@ const PADDLE_HEIGHT = 100, PADDLE_WIDTH = 10;
 
 const FPS = 30;
 const ballSpeedMultiplier = 10;
+const computerPaddleSpeed = 4, computerPaddleAccuracy = 35; // consts for changing AI difficulty, speed for paddle and angles of the shots
+const MAX_SCORE = 2;
+
 let ballSpeedX = 10, ballSpeedY = 2;
 let player1_Score = 0, player2_Score = 0;
 
@@ -40,6 +43,11 @@ calculateMousePos = (evt) => {
 }
 
 ballReset = () => {
+    if(player1_Score == MAX_SCORE || player2_Score == MAX_SCORE) {
+        player1_Score = 0;
+        player2_Score = 0;
+    }
+
     ballX = canvas.height / 2;
     ballY = canvas.width / 2;
 
@@ -47,7 +55,23 @@ ballReset = () => {
     ballSpeedY = 2; // reset vertical direction when ball resets
 }
 
+moveComputerPaddle = () => {
+    const distance = ballY -(PADDLE_Y_RIGHT + (PADDLE_HEIGHT/2)); // const for measuring distance the balls y coordinates with the paddle
+
+    if(ballY < PADDLE_Y_RIGHT + (PADDLE_HEIGHT/2)) {
+        if(distance < -35) {
+            PADDLE_Y_RIGHT -= computerPaddleSpeed;
+        }
+    }else if(ballY > PADDLE_Y_RIGHT + (PADDLE_HEIGHT/2)) {
+        if(distance > 35) {
+            PADDLE_Y_RIGHT += computerPaddleSpeed;
+        }
+    };
+}
+
 moveAll = () => {
+    moveComputerPaddle();
+
     if(ballX > canvas.width - ballRadius) { // added ballRadius for more accurate collision checks
         //collision check for right paddle
         if(ballY > PADDLE_Y_RIGHT && ballY < PADDLE_Y_RIGHT + PADDLE_HEIGHT) {
