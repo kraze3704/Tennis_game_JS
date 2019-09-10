@@ -51,6 +51,8 @@ moveAll = () => {
     if(ballX > canvas.width - ballRadius) { // added ballRadius for more accurate collision checks
         //collision check for right paddle
         if(ballY > PADDLE_Y_RIGHT && ballY < PADDLE_Y_RIGHT + PADDLE_HEIGHT) {
+            let modifier = (ballY - (PADDLE_Y_RIGHT + (PADDLE_HEIGHT/2))) / (PADDLE_HEIGHT/2)
+            ballSpeedY = modifier * ballSpeedMultiplier;
             ballSpeedX *= -1;
         }else {
             player1_Score++;
