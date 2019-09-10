@@ -3,11 +3,12 @@ let canvas, canvasContext;
 
 let ballX = 75, ballY = 75;
 const ballRadius = 10;
-let PADDLE_Y = 250;
+let PADDLE_Y = 250, PADDLE_Y_RIGHT = 250;
 const PADDLE_HEIGHT = 100, PADDLE_WIDTH = 10;
 
 const FPS = 30;
-let ballSpeedX = 2, ballSpeedY = 2;
+let ballSpeedX = 10, ballSpeedY = 2;
+let player1_Score = 0, player2_Score = 0;
 
 window.onload = () => {
     canvas = document.getElementById('gameCanvas');
@@ -37,11 +38,34 @@ calculateMousePos = (evt) => {
     };
 }
 
+ballReset = () => {
+    ballX = canvas.height / 2;
+    ballY = canvas.width / 2;
+
+    ballSpeedX *= -1; // flip horizontal direction when ball resets
+}
+
 moveAll = () => {
-    if(ballX > canvas.width - ballRadius || ballX < ballRadius) { // added ballRadius for more accurate collision checks
-        ballSpeedX *= -1;
+    if(ballX > canvas.width - ballRadius) { // added ballRadius for more accurate collision checks
+        //collision check for right paddle
+        if(ballY > PADDLE_Y_RIGHT && ballY < PADDLE_Y_RIGHT + PADDLE_HEIGHT) {
+            ballSpeedX *= -1;
+        }else {
+            player1_Score++;
+            ballReset();
+        }
+    }else if(ballX < ballRadius) {
+        //collision check for left paddle
+        if(ballY > PADDLE_Y && ballY < PADDLE_Y + PADDLE_HEIGHT) {
+            ballSpeedX *= -1;
+        }else {
+            player2_Score++;
+            ballReset();
+        }
     }
-    if(ballY > canvas.height - ballRadius || ballY < ballRadius) {
+    if(ballY > canvas.height - ballRadius) {
+        ballSpeedY *= -1;
+    }else if(ballY < ballRadius) {
         ballSpeedY *= -1;
     }
     ballX += ballSpeedX;
@@ -60,6 +84,13 @@ colorCircle = (centerX, centerY, radius, fillColor) => {
     canvasContext.fill();
 }
 
+writeText = (topLeftX, topY, text) => {
+    canvasContext.font = "20px Comic Sans MS";
+    canvasContext.fillStyle = "red";
+    canvasContext.textAlign = "center";
+    canvasContext.fillText("score: " + text, topLeftX, topY);
+}
+
 drawAll = () => {
     // clear game view by filling it black
     colorRect(0, 0, canvas.width, canvas.height, '#000000');
@@ -67,6 +98,15 @@ drawAll = () => {
     // draw white rectangle to use as left player's paddle
     colorRect(0, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT, '#FFFFFF');
 
+    // draw white rectangle to use as right player's paddle
+    colorRect(canvas.width - PADDLE_WIDTH, PADDLE_Y_RIGHT, PADDLE_WIDTH, PADDLE_HEIGHT, '#FFFFFF');
+
     // draw the ball
     colorCircle(ballX, ballY, 10, '#FFFFFF');
+
+    // write score on canvas for player 1
+    writeText(100, 100, player1_Score);
+
+    // write score on canvas for player 2
+    writeText(canvas.width - 100, 100, player2_Score);
 }
