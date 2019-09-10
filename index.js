@@ -7,6 +7,7 @@ let PADDLE_Y = 250, PADDLE_Y_RIGHT = 250;
 const PADDLE_HEIGHT = 100, PADDLE_WIDTH = 10;
 
 const FPS = 30;
+const ballSpeedMultiplier = 10;
 let ballSpeedX = 10, ballSpeedY = 2;
 let player1_Score = 0, player2_Score = 0;
 
@@ -43,6 +44,7 @@ ballReset = () => {
     ballY = canvas.width / 2;
 
     ballSpeedX *= -1; // flip horizontal direction when ball resets
+    ballSpeedY = 2; // reset vertical direction when ball resets
 }
 
 moveAll = () => {
@@ -57,6 +59,8 @@ moveAll = () => {
     }else if(ballX < ballRadius) {
         //collision check for left paddle
         if(ballY > PADDLE_Y && ballY < PADDLE_Y + PADDLE_HEIGHT) {
+            let modifier = (ballY - (PADDLE_Y + (PADDLE_HEIGHT/2))) / (PADDLE_HEIGHT/2)
+            ballSpeedY = modifier * ballSpeedMultiplier;
             ballSpeedX *= -1;
         }else {
             player2_Score++;
